@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="LSo-il-GdI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="LSo-il-GdI">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,31 +16,38 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JR5-Az-6kI">
-                                <rect key="frame" x="95" y="244" width="224" height="114"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="us"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bop-sS-DA7">
+                                <rect key="frame" x="107" y="100" width="200" height="100"/>
+                                <rect key="contentStretch" x="1" y="1" width="1" height="1"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="bop-sS-DA7" secondAttribute="height" multiplier="2:1" id="R8Z-O6-9e1"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="" image="us"/>
+                                <connections>
+                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="r5o-PG-jOr"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JR5-Az-6kI">
+                                <rect key="frame" x="107" y="230" width="200" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="JR5-Az-6kI" secondAttribute="height" multiplier="2:1" id="wLx-rA-bTH"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="us"/>
                                 <connections>
                                     <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="l2i-WB-xKp"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="bP0-iV-bPy">
-                                <rect key="frame" x="95" y="388" width="224" height="114"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="us"/>
+                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bP0-iV-bPy">
+                                <rect key="frame" x="107" y="360" width="200" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="bP0-iV-bPy" secondAttribute="height" multiplier="2:1" id="cqm-cB-XP6"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="us"/>
                                 <connections>
                                     <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uIR-zq-qhh"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="bop-sS-DA7">
-                                <rect key="frame" x="95" y="100" width="224" height="114"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <rect key="contentStretch" x="1" y="1" width="1" height="1"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="us" title=""/>
-                                <connections>
-                                    <action selector="buttonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="r5o-PG-jOr"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -49,7 +56,10 @@
                         <constraints>
                             <constraint firstItem="bP0-iV-bPy" firstAttribute="centerX" secondItem="JR5-Az-6kI" secondAttribute="centerX" id="5cU-qv-JW8"/>
                             <constraint firstItem="JR5-Az-6kI" firstAttribute="top" secondItem="bop-sS-DA7" secondAttribute="bottom" constant="30" id="Cj6-l7-jwk"/>
+                            <constraint firstItem="JR5-Az-6kI" firstAttribute="height" secondItem="bop-sS-DA7" secondAttribute="height" id="IrI-az-If5"/>
+                            <constraint firstItem="bP0-iV-bPy" firstAttribute="height" secondItem="JR5-Az-6kI" secondAttribute="height" id="U7p-KY-mcN"/>
                             <constraint firstItem="bop-sS-DA7" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="12" id="Xmb-wS-vAN"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="bP0-iV-bPy" secondAttribute="bottom" constant="20" id="cA2-pv-wXG"/>
                             <constraint firstItem="JR5-Az-6kI" firstAttribute="centerX" secondItem="bop-sS-DA7" secondAttribute="centerX" id="cx4-Fd-zmg"/>
                             <constraint firstItem="bop-sS-DA7" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="daY-fz-JVW"/>
                             <constraint firstItem="bP0-iV-bPy" firstAttribute="top" secondItem="JR5-Az-6kI" secondAttribute="bottom" constant="30" id="zJs-Y1-3MN"/>
