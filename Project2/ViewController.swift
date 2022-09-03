@@ -102,6 +102,24 @@ class ViewController: UIViewController {
         
         var title: String
         
+        // Project_15-Challenge_3:
+        if sender == button1 {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: [], animations: {
+                self.button1.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                self.button1.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        } else if sender == button2 {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: [], animations: {
+                self.button2.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                self.button2.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        } else if sender == button3 {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: [], animations: {
+                self.button3.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                self.button3.transform = CGAffineTransform(scaleX: 1, y: 1)
+            })
+        }
+        
         if sender.tag == correctAnswer {
             title = "Correct!"
             score += 1
