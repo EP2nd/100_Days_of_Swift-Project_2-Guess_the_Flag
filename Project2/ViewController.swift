@@ -32,6 +32,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Project 21, challenge 3:
+        registerLocalNotifications()
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Score", style: .plain, target: self, action: #selector(showScore))
         
         let defaults = UserDefaults.standard
@@ -65,8 +68,6 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         button1.layer.borderColor = UIColor.lightGray.cgColor
         button2.layer.borderColor = UIColor.lightGray.cgColor
         button3.layer.borderColor = UIColor.lightGray.cgColor
-        // Project 21, challenge 3:
-        registerLocalNotifications()
         
         askQuestion()
     }
@@ -186,16 +187,19 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
     func registerLocalNotifications() {
         let center = UNUserNotificationCenter.current()
         
-        center.getNotificationSettings { (settings) in
+        center.getNotificationSettings { [weak self ] (settings) in
             if settings.authorizationStatus == .notDetermined {
-                let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing Gues the Flag reminding you about practice of proper flag naming.", preferredStyle: .alert)
-                ac.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                    self.promptNotificationsAuthorization()
-                })
-                self.present(ac, animated: true)
+                DispatchQueue.main.async {
+                    let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing Gues the Flag reminding you about practice of proper flag naming.", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                        self?.promptNotificationsAuthorization()
+                    })
+                    self?.present(ac, animated: true)
+                    return
+                }
             }
             if settings.authorizationStatus == .authorized {
-                self.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+                self?.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
             }
         }
     }
@@ -203,17 +207,19 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
     func promptNotificationsAuthorization() {
         let center = UNUserNotificationCenter.current()
         
-        center.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { [ weak self ] granted, error in
             if granted {
-                self.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+                self?.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
                 
                 print("Permision granted.")
             } else {
-                let ac = UIAlertController(title: "Choice saved", message: "We respect your wish, we will not bother you with reminders. Should you change your mind, you can update your preference in system settings.", preferredStyle: .alert)
-                ac.addAction(UIAlertAction(title: "OK", style: .default))
-                self.present(ac, animated: true)
-                
-                print("Notifications disabled.")
+                DispatchQueue.main.async {
+                    let ac = UIAlertController(title: "Choice saved", message: "We respect your wish, we will not bother you with reminders. Should you change your mind, you can update your preference in system settings.", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self?.present(ac, animated: true)
+                    
+                    print("Notifications disabled.")
+                }
             }
         }
     }
@@ -263,15 +269,18 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             
             switch response.actionIdentifier {
             case UNNotificationDefaultActionIdentifier:
-                let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
-                ac.addAction(UIAlertAction(title: "Play", style: .default))
-                present(ac, animated: true)
-                print("The player opened the app.")
+                DispatchQueue.main.async {
+                    let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "Play", style: .default))
+                    self.present(ac, animated: true)
+                    print("The player opened the app.")
+                }
                 
             case "open":
                 print("The player tapped the \"Play\" button.")
                 
             case "reminder":
+                registerLocalNotifications()
                 print("Reminder postponed.")
                 
             default:
