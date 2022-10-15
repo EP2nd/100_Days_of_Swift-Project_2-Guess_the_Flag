@@ -1,4 +1,12 @@
+//
+//  SceneDelegate.swift
+//  Project2
+//
+//  Created by Edwin Przeźwiecki Jr. on 25/11/2021.
+//
+
 import UIKit
+import UserNotifications
 
 extension String {
     func capitalizingFirstLetter() -> String {
@@ -9,7 +17,7 @@ extension String {
     }
 }
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UNUserNotificationCenterDelegate {
     @IBOutlet var button1: UIButton!
     @IBOutlet var button2: UIButton!
     @IBOutlet var button3: UIButton!
@@ -42,11 +50,11 @@ class ViewController: UIViewController {
         
         /* let defaults = UserDefaults.standard
          
-        if let highestScore = defaults.value(forKey: "highestScore") as? Int {
-            self.highestScore = highestScore
-        } else {
-            print("Failed to load the highest score.")
-        } */
+         if let highestScore = defaults.value(forKey: "highestScore") as? Int {
+         self.highestScore = highestScore
+         } else {
+         print("Failed to load the highest score.")
+         } */
         
         countries += ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria", "poland", "russia", "spain", "uk", "us"]
         
@@ -57,6 +65,8 @@ class ViewController: UIViewController {
         button1.layer.borderColor = UIColor.lightGray.cgColor
         button2.layer.borderColor = UIColor.lightGray.cgColor
         button3.layer.borderColor = UIColor.lightGray.cgColor
+        // Project 21, challenge 3:
+        registerLocalNotifications()
         
         askQuestion()
     }
@@ -164,11 +174,110 @@ class ViewController: UIViewController {
     // Alternative function (the foregoing was for custom types):
     
     /* func save() {
-        let defaults = UserDefaults.standard
+     let defaults = UserDefaults.standard
+     
+     do {
+     defaults.set(highestScore, forKey: "highestScore")
+     print("Failed to save the highest score.")
+     }
+     } */
+    
+    // Project 21, challenge 3:
+    func registerLocalNotifications() {
+        let center = UNUserNotificationCenter.current()
         
-        do {
-            defaults.set(highestScore, forKey: "highestScore")
-            print("Failed to save the highest score.")
+        center.getNotificationSettings { (settings) in
+            if settings.authorizationStatus == .notDetermined {
+                let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing Gues the Flag reminding you about practice of proper flag naming.", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                    self.promptNotificationsAuthorization()
+                })
+                self.present(ac, animated: true)
+            }
+            if settings.authorizationStatus == .authorized {
+                self.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+            }
         }
-    } */
+    }
+    
+    func promptNotificationsAuthorization() {
+        let center = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+            if granted {
+                self.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+                
+                print("Permision granted.")
+            } else {
+                let ac = UIAlertController(title: "Choice saved", message: "We respect your wish, we will not bother you with reminders. Should you change your mind, you can update your preference in system settings.", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(ac, animated: true)
+                
+                print("Notifications disabled.")
+            }
+        }
+    }
+    
+    func scheduleLocalNotifications(hours: Int, minutes: Int, day: Int) {
+        registerCategories()
+        
+        let center = UNUserNotificationCenter.current()
+        
+        center.removeAllPendingNotificationRequests()
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Come and play!"
+        content.body = "It's been a while. Do you still rememer some of the most popular country flags? Have some rounds and find out!"
+        content.categoryIdentifier = "reminder"
+        content.userInfo = ["customData": "EPJr."]
+        content.sound = UNNotificationSound.default
+        
+        var dateComponents = DateComponents()
+        dateComponents.hour = hours
+        dateComponents.minute = minutes
+        dateComponents.day = day
+        
+        for _ in 1...7 {
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            center.add(request)
+        }
+    }
+    
+    func registerCategories() {
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        
+        let open = UNNotificationAction(identifier: "open", title: "Let's play!", options: .foreground)
+        let reminder = UNNotificationAction(identifier: "reminder", title: "Remind me tomorrow", options: .authenticationRequired)
+        let category = UNNotificationCategory(identifier: "reminder", actions: [open, reminder], intentIdentifiers: [])
+        
+        center.setNotificationCategories([category])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        
+        if let customData = userInfo["customData"] as? String {
+            print("Custom data received: \(customData).")
+            
+            switch response.actionIdentifier {
+            case UNNotificationDefaultActionIdentifier:
+                let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "Play", style: .default))
+                present(ac, animated: true)
+                print("The player opened the app.")
+                
+            case "open":
+                print("The player tapped the \"Play\" button.")
+                
+            case "reminder":
+                print("Reminder postponed.")
+                
+            default:
+                break
+            }
+        }
+        completionHandler()
+    }
 }
