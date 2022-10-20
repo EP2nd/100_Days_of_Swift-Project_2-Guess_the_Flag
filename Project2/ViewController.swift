@@ -190,7 +190,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.getNotificationSettings { [weak self ] (settings) in
             if settings.authorizationStatus == .notDetermined {
                 DispatchQueue.main.async {
-                    let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing Gues the Flag reminding you about practice of proper flag naming.", preferredStyle: .alert)
+                    let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing \"Guess the Flag\" reminding you about practice of proper flag naming.", preferredStyle: .alert)
                     ac.addAction(UIAlertAction(title: "OK", style: .default) { _ in
                         self?.promptNotificationsAuthorization()
                     })
@@ -199,7 +199,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
                 }
             }
             if settings.authorizationStatus == .authorized {
-                self?.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+                self?.scheduleLocalNotifications(time: 86400)
             }
         }
     }
@@ -209,7 +209,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         
         center.requestAuthorization(options: [.alert, .badge, .sound]) { [ weak self ] granted, error in
             if granted {
-                self?.scheduleLocalNotifications(hours: 10, minutes: 00, day: +1)
+                self?.scheduleLocalNotifications(time: 86400)
                 
                 print("Permision granted.")
             } else {
@@ -224,7 +224,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
-    func scheduleLocalNotifications(hours: Int, minutes: Int, day: Int) {
+    func scheduleLocalNotifications(time: TimeInterval) {
         registerCategories()
         
         let center = UNUserNotificationCenter.current()
@@ -233,18 +233,12 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         
         let content = UNMutableNotificationContent()
         content.title = "Come and play!"
-        content.body = "It's been a while. Do you still rememer some of the most popular country flags? Have some rounds and find out!"
+        content.body = "It's been a while. Do you still remember some of the most popular country flags? Have some rounds and find out!"
         content.categoryIdentifier = "reminder"
-        content.userInfo = ["customData": "EPJr."]
         content.sound = UNNotificationSound.default
         
-        var dateComponents = DateComponents()
-        dateComponents.hour = hours
-        dateComponents.minute = minutes
-        dateComponents.day = day
-        
-        for _ in 1...7 {
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+        for day in 1...7 {
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: time * Double(day), repeats: false)
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
             center.add(request)
         }
@@ -262,30 +256,25 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
         
-        if let customData = userInfo["customData"] as? String {
-            print("Custom data received: \(customData).")
-            
-            switch response.actionIdentifier {
-            case UNNotificationDefaultActionIdentifier:
-                DispatchQueue.main.async {
-                    let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
-                    ac.addAction(UIAlertAction(title: "Play", style: .default))
-                    self.present(ac, animated: true)
-                    print("The player opened the app.")
-                }
-                
-            case "open":
-                print("The player tapped the \"Play\" button.")
-                
-            case "reminder":
-                registerLocalNotifications()
-                print("Reminder postponed.")
-                
-            default:
-                break
+        switch response.actionIdentifier {
+        case UNNotificationDefaultActionIdentifier:
+            DispatchQueue.main.async {
+                let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "Play", style: .default))
+                self.present(ac, animated: true)
+                print("The player opened the app.")
             }
+            
+        case "open":
+            print("The player tapped the \"Play\" button.")
+            
+        case "reminder":
+            registerLocalNotifications()
+            print("Reminder postponed.")
+            
+        default:
+            break
         }
         completionHandler()
     }
