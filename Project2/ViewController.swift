@@ -12,31 +12,35 @@ extension String {
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
     }
-    mutating func capitalizeFirstLetter() {
-        self = self.capitalizingFirstLetter()
-    }
 }
 
 class ViewController: UIViewController, UNUserNotificationCenterDelegate {
+    
     @IBOutlet var button1: UIButton!
     @IBOutlet var button2: UIButton!
     @IBOutlet var button3: UIButton!
     
     var countries = [String]()
+    
     var correctAnswer = 0
     var score = 0
+    /// Project 12, challenge 2:
     var highestScore = 0
+    /// Challenge 2:
     var questionsAsked = 0
+    
     var capitalized = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Project 21, challenge 3:
+        /// Project 21, challenge 3:
         registerLocalNotifications()
         
+        /// Project 3, challenge 3:
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Score", style: .plain, target: self, action: #selector(showScore))
         
+        /// Project 12, challenge 2:
         let defaults = UserDefaults.standard
         
         if let savedHighestScore = defaults.object(forKey: "highestScore") as? Data {
@@ -48,16 +52,6 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
                 print("Failed to load the highest score.")
             }
         }
-        
-        // Alternative way (the foregoing was for custom types):
-        
-        /* let defaults = UserDefaults.standard
-         
-         if let highestScore = defaults.value(forKey: "highestScore") as? Int {
-         self.highestScore = highestScore
-         } else {
-         print("Failed to load the highest score.")
-         } */
         
         countries += ["estonia", "france", "germany", "ireland", "italy", "monaco", "nigeria", "poland", "russia", "spain", "uk", "us"]
         
@@ -72,7 +66,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         askQuestion()
     }
     
+    /// Project 3, challenge 3:
     @objc func showScore() {
+        
         let info = "Score: \(score)"
         
         let viewScore = UIActivityViewController (activityItems: [info], applicationActivities: [])
@@ -96,14 +92,18 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             capitalized = countries[correctAnswer].capitalizingFirstLetter()
         }
         
+        /// Challenge 1:
         /* title = "\(capitalized) (Score: \(score))" */
         title = "\(capitalized)"
     }
     
     func gameOver(action: UIAlertAction! = nil) {
+        
+        /// Project 12, challenge 2:
         save()
         
         score = 0
+        /// Challenge 2:
         questionsAsked = 0
         
         askQuestion()
@@ -113,7 +113,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         
         var title: String
         
-        // Project_15-Challenge_3:
+        /// Project 15, challenge 3:
         if sender == button1 {
             UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: [], animations: {
                 self.button1.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
@@ -131,39 +131,53 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             })
         }
         
+        /// Challenge 3:
         if sender.tag == correctAnswer {
             title = "Correct!"
             score += 1
+            /// Challenge 2:
             questionsAsked += 1
         } else if countries[sender.tag].count <= 3 {
             title = "Wrong! That's the flag of \(countries[sender.tag].uppercased())"
             score -= 1
+            /// Challenge 2:
             questionsAsked += 1
         } else {
             title = "Wrong! That's the flag of \(countries[sender.tag].capitalizingFirstLetter())."
             score -= 1
+            /// Challenge 2:
             questionsAsked += 1
         }
         
+        /// Challenge 2:
+        /// Project 12, challenge 2:
         if questionsAsked == 10 && score > highestScore {
-            let ac = UIAlertController(title: "Game over!", message: "You set a new record! Your final score: \(score)", preferredStyle: .alert)
+            
+            let ac = UIAlertController(title: "Game over!", message: "You set a new record!\nYour final score: \(score)", preferredStyle: .alert)
+            
             ac.addAction(UIAlertAction(title: "OK", style: .default, handler: gameOver))
             present(ac, animated: true)
             
             highestScore = score
         } else if questionsAsked == 10 && score <= highestScore {
+            
             let ac = UIAlertController(title: "Game over!", message: "Your final score: \(score).", preferredStyle: .alert)
+            
             ac.addAction(UIAlertAction(title: "OK", style: .default, handler: gameOver))
             present(ac, animated: true)
         }
         
         let ac = UIAlertController(title: title, message: "Your current score is \(score).", preferredStyle: .alert)
+        
         ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: askQuestion))
         present(ac, animated: true)
     }
     
+    /// Project 12, challenge 2:
     func save() {
+        
         let jsonEncoder = JSONEncoder()
+        
         if let savedHighestScore = try? jsonEncoder.encode(highestScore) {
             let defaults = UserDefaults.standard
             defaults.set(savedHighestScore, forKey: "highestScore")
@@ -172,29 +186,22 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
-    // Alternative function (the foregoing was for custom types):
-    
-    /* func save() {
-     let defaults = UserDefaults.standard
-     
-     do {
-     defaults.set(highestScore, forKey: "highestScore")
-     print("Failed to save the highest score.")
-     }
-     } */
-    
-    // Project 21, challenge 3:
+    /// Project 21, challenge 3:
     func registerLocalNotifications() {
+        
         let center = UNUserNotificationCenter.current()
         
         center.getNotificationSettings { [weak self ] (settings) in
+            
             if settings.authorizationStatus == .notDetermined {
                 DispatchQueue.main.async {
                     let ac = UIAlertController(title: "Daily reminders", message: "Please consider allowing \"Guess the Flag\" reminding you about practice of proper flag naming.", preferredStyle: .alert)
+                    
                     ac.addAction(UIAlertAction(title: "OK", style: .default) { _ in
                         self?.promptNotificationsAuthorization()
                     })
                     self?.present(ac, animated: true)
+                    
                     return
                 }
             }
@@ -204,7 +211,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
+    /// Project 21, challenge 3:
     func promptNotificationsAuthorization() {
+        
         let center = UNUserNotificationCenter.current()
         
         center.requestAuthorization(options: [.alert, .badge, .sound]) { [ weak self ] granted, error in
@@ -215,6 +224,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             } else {
                 DispatchQueue.main.async {
                     let ac = UIAlertController(title: "Choice saved", message: "We respect your wish, we will not bother you with reminders. Should you change your mind, you can update your preference in system settings.", preferredStyle: .alert)
+                    
                     ac.addAction(UIAlertAction(title: "OK", style: .default))
                     self?.present(ac, animated: true)
                     
@@ -224,7 +234,9 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
+    /// Project 21, challenge 3:
     func scheduleLocalNotifications(time: TimeInterval) {
+        
         registerCategories()
         
         let center = UNUserNotificationCenter.current()
@@ -232,6 +244,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.removeAllPendingNotificationRequests()
         
         let content = UNMutableNotificationContent()
+        
         content.title = "Come and play!"
         content.body = "It's been a while. Do you still remember some of the most popular country flags? Have some rounds and find out!"
         content.categoryIdentifier = "reminder"
@@ -244,8 +257,11 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         }
     }
     
+    /// Project 21, challenge 3:
     func registerCategories() {
+        
         let center = UNUserNotificationCenter.current()
+        
         center.delegate = self
         
         let open = UNNotificationAction(identifier: "open", title: "Let's play!", options: .foreground)
@@ -255,14 +271,17 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
         center.setNotificationCategories([category])
     }
     
+    /// Project 21, challenge 3:
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             DispatchQueue.main.async {
                 let ac = UIAlertController(title: "Oh, hi!", message: "Let's go!", preferredStyle: .alert)
+                
                 ac.addAction(UIAlertAction(title: "Play", style: .default))
                 self.present(ac, animated: true)
+                
                 print("The player opened the app.")
             }
             
@@ -271,6 +290,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             
         case "reminder":
             registerLocalNotifications()
+            
             print("Reminder postponed.")
             
         default:
